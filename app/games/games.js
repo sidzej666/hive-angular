@@ -2,7 +2,7 @@
 
 angular.module('theHive')
   .controller('GamesCtrl', ['$scope', 'gamesService', function ($scope, gamesService) {
-  	var game = {title : "Kaman zioms!",
+    var game = {title : "Kaman zioms!",
   				description : "sidzej wbijaj!"};
     $scope.showGames = true;
     $scope.games = gamesService.getGames();

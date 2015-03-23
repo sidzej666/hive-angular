@@ -18,13 +18,14 @@ angular
     'ngRoute',
     'ngSanitize',
     'ngTouch',
-    'ab-base64'
+    'ab-base64',
+    'LocalStorageModule'
   ])
   .config(function ($routeProvider) {
     $routeProvider
       .when('/', {
-        templateUrl: 'games/main.html',
-        controller: 'MainCtrl'
+        templateUrl: 'login/login.html',
+        controller: 'LoginCtrl'
       })
       .when('/about', {
         templateUrl: 'games/about.html',
@@ -33,6 +34,10 @@ angular
       .when('/games', {
         templateUrl: 'games/games.html',
         controller: 'GamesCtrl'
+      })
+      .when('/signup', {
+        templateUrl: 'login/signup.html',
+        controller: 'MainCtrl'
       })
       .otherwise({
         redirectTo: '/'
@@ -46,7 +51,6 @@ angular
     $httpProvider.defaults.useXDomain = true;
     $httpProvider.defaults.withCredentials = true;
     delete $httpProvider.defaults.headers.common['X-Requested-With'];
-    //$httpProvider.defaults.headers.common['X-CSRFToken'] = 'aaaa';
 
     $httpProvider.interceptors.push(function() {
       return {
@@ -59,4 +63,37 @@ angular
           }
       };
     })
-  }]);
+  }])
+  .factory('Auth', function($http, LocalService, AccessLevels) {
+  return {
+    authorize: function(access) {
+      if (access === AccessLevels.user) {
+        return this.isAuthenticated();
+      } else {
+        return true;
+      }
+    },
+    isAuthenticated: function() {
+      return LocalService.get('auth_token');
+    },
+    login: function(credentials) {
+      var login = $http.post('https://localhost:8444/HiveServer/rest/login', credentials);
+      login.success(function(result) {
+        LocalService.set('auth_token', JSON.stringify(result));
+      });
+      return login;
+    },
+    logout: function() {
+      // The backend doesn't care about logouts, delete the token and you're good to go.
+      LocalService.unset('auth_token');
+    },
+    register: function(formData) {
+      LocalService.unset('auth_token');
+      var register = $http.post('/auth/register', formData);
+      register.success(function(result) {
+        LocalService.set('auth_token', JSON.stringify(result));
+      });
+      return register;
+    }
+  };
+});

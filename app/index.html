@@ -13,6 +13,7 @@
     <!-- endbuild -->
     <!-- build:css(.tmp) styles/main.css -->
     <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="login/login.css">
     <!-- endbuild -->
   </head>
   <body ng-app="theHive">
@@ -22,7 +23,7 @@
 
     <!-- Add your site or application content here -->
     <div class="header">
-      <div class="navbar navbar-default" role="navigation">
+      <div class="navbar navbar-default navbar-static-top" role="navigation">
         <div class="container">
           <div class="navbar-header">
 
@@ -84,6 +85,7 @@
     <script src="bower_components/angular-sanitize/angular-sanitize.js"></script>
     <script src="bower_components/angular-touch/angular-touch.js"></script>
     <script src="bower_components/angular-utf8-base64/angular-utf8-base64.js"></script>
+    <script src="bower_components/angular-local-storage/dist/angular-local-storage.js"></script>
     <!-- endbower -->
     <!-- endbuild -->
 
@@ -93,6 +95,7 @@
         <script src="games/about.js"></script>
         <script src="games/games.js"></script>
         <script src="games/gamesServices.js"></script>
+        <script src="login/login.js"></script>
         <!-- endbuild -->
 </body>
 </html>

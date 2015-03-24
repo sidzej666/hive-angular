@@ -1,14 +1,15 @@
 'use strict';
-
+ 
 angular.module('theHive')
-  .controller('LoginCtrl', ['$scope', '$http', 'localStorageService', 
-      function ($scope, $http, localStorage) {
+  .controller('LoginCtrl', ['$scope', '$http', '$cookies', 'restServiceUrl',
+      function ($scope, $http, $cookies, restServiceUrl) {
     
     $scope.login = function () {
     	var credentials = {username: $scope.username, password: $scope.password};
-    	$http.post('https://localhost:8444/HiveServer/rest/login', credentials)
-    		.success(function (result) {
+    	$http.post(restServiceUrl + 'login', credentials)
+    		.success(function (result, status, headers, config) {
       			$scope.result = result;
+   				$cookies['CSRF-TOKEN'] = headers['X-AUTH-TOKEN'];
     		});
-  	};
-  }]);
+  }
+}]);

@@ -44,56 +44,36 @@ angular
       });
   })
   .config(['$httpProvider', function ($httpProvider) {
+    var $cookies;
+    angular.injector(['ngCookies']).invoke(function(_$cookies_) {
+      $cookies = _$cookies_;
+    });
+
     //fancy random token, losely after https://gist.github.com/jed/982883
     function b(a){return a?(a^Math.random()*16>>a/4).toString(16):([1e16]+1e16).replace(/[01]/g,b)};
     // delete header from client:
     // http://stackoverflow.com/questions/17289195/angularjs-post-data-to-external-rest-api
     $httpProvider.defaults.useXDomain = true;
-    $httpProvider.defaults.withCredentials = true;
     delete $httpProvider.defaults.headers.common['X-Requested-With'];
 
-    $httpProvider.interceptors.push(function() {
+    $httpProvider.interceptors.push(function($q) {
       return {
           'request': function(config) {
               // put a new random secret into our CSRF-TOKEN Cookie before each request
-              var cookie = b();
-              document.cookie = 'CSRF-TOKEN=' + cookie;
-              config.headers['X-CSRF-TOKEN'] = cookie;
+              //var cookie = b();
+              //document.cookie = 'CSRF-TOKEN=' + cookie;
+              if ($cookies['CSRF-TOKEN'] != 'null') {
+                config.headers['X-AUTH-TOKEN'] = $cookies['CSRF-TOKEN'];
+              }
               return config;
+          },
+          'responseError': function(error) {
+            if (error.status == 401 || error.status == 403) {
+              $cookies['CSRF-TOKEN'] = 'null';
+            }
+            return $q.reject(error);
           }
       };
-    })
+    });
   }])
-  .factory('Auth', function($http, LocalService, AccessLevels) {
-  return {
-    authorize: function(access) {
-      if (access === AccessLevels.user) {
-        return this.isAuthenticated();
-      } else {
-        return true;
-      }
-    },
-    isAuthenticated: function() {
-      return LocalService.get('auth_token');
-    },
-    login: function(credentials) {
-      var login = $http.post('https://localhost:8444/HiveServer/rest/login', credentials);
-      login.success(function(result) {
-        LocalService.set('auth_token', JSON.stringify(result));
-      });
-      return login;
-    },
-    logout: function() {
-      // The backend doesn't care about logouts, delete the token and you're good to go.
-      LocalService.unset('auth_token');
-    },
-    register: function(formData) {
-      LocalService.unset('auth_token');
-      var register = $http.post('/auth/register', formData);
-      register.success(function(result) {
-        LocalService.set('auth_token', JSON.stringify(result));
-      });
-      return register;
-    }
-  };
-});
+  .value('restServiceUrl', 'https://localhost:8443/HiveServer/rest/');

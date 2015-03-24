@@ -9,7 +9,7 @@ angular.module('theHive')
     	$http.post(restServiceUrl + 'login', credentials)
     		.success(function (result, status, headers, config) {
       			$scope.result = result;
-   				$cookies['CSRF-TOKEN'] = headers['X-AUTH-TOKEN'];
+   				$cookies['CSRF-TOKEN'] = headers('X-AUTH-TOKEN');
     		});
   }
 }]);

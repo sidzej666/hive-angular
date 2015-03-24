@@ -76,4 +76,4 @@ angular
       };
     });
   }])
-  .value('restServiceUrl', 'https://localhost:8443/HiveServer/rest/');
+  .value('restServiceUrl', 'https://localhost:8444/HiveServer/rest/');

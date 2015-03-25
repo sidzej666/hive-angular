@@ -2,6 +2,12 @@
 	<p>No active games at this moment</p>
 </div>{
 {{$games}}
+<div class="container" my-access="ADMIN">
+	ADMIN SECTION
+</div>
+<div class="container" my-access="USER">
+	USER SECTION
+</div>
 <div class="list-group" ng-repeat="game in games" ng-if="showGames">
   <a href="#/play" class="list-group-item">
     <h4 class="list-group-item-heading">{{game.name}}</h4>

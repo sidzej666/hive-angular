@@ -4,7 +4,7 @@ angular.module('theHive')
         
         this.getGames = function () {
 			var responseData;
-            $http.get(restServiceUrl + 'users//1')
+            $http.get(restServiceUrl + '/users/1')
             .success(function(data, status, headers, config) {
             	responseData = data;
         	})

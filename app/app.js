@@ -17,9 +17,7 @@ angular
     'ngResource',
     'ngRoute',
     'ngSanitize',
-    'ngTouch',
-    'ab-base64',
-    'LocalStorageModule'
+    'ngTouch'
   ])
   .config(function ($routeProvider) {
     $routeProvider
@@ -33,7 +31,12 @@ angular
       })
       .when('/games', {
         templateUrl: 'games/games.html',
-        controller: 'GamesCtrl'
+        controller: 'GamesCtrl',
+        resolve: {
+            permission: function(authorizationService) {
+              return authorizationService.authenticate(['USER']);
+            },
+        }
       })
       .when('/signup', {
         templateUrl: 'login/signup.html',
@@ -76,4 +79,4 @@ angular
       };
     });
   }])
-  .value('restServiceUrl', 'https://localhost:8443/HiveServer/rest/');
+  .value('restServiceUrl', 'https://localhost:8444/HiveServer/rest');

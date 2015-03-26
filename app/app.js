@@ -21,7 +21,7 @@ angular
   ])
   .config(function ($routeProvider) {
     $routeProvider
-      .when('/', {
+      .when('/signin', {
         templateUrl: 'login/login.html',
         controller: 'LoginCtrl'
       })
@@ -43,7 +43,7 @@ angular
         controller: 'MainCtrl'
       })
       .otherwise({
-        redirectTo: '/'
+        redirectTo: '/signin'
       });
   })
   .config(['$httpProvider', function ($httpProvider) {
@@ -78,5 +78,8 @@ angular
           }
       };
     });
+  }])
+  .run(['authorizationService', function(authorizationService) {
+    authorizationService.getRoles();
   }])
   .value('restServiceUrl', 'https://localhost:8444/HiveServer/rest');

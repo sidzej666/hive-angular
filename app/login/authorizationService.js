@@ -1,9 +1,14 @@
 angular.module('theHive')
-  .service('authorizationService', ['$http', 'restServiceUrl', '$location',
-    function ($http, restServiceUrl, $location) {
-      var userRoles = [];
+  .service('authorizationService', ['$http', 'restServiceUrl', '$location', '$rootScope', '$cookies',
+    function ($http, restServiceUrl, $location, $rootScope, $cookies) {
+      var userRoles = ['NOT_LOGGED'];
       var rolesInitialized = false;
+      $rootScope.signedIn = false;
+
       this.userHasRole = function (role) {
+        if (!rolesInitialized) {
+          this.getRoles();
+        }
         for (var j = 0; j < userRoles.length; j++) {
           if (role == userRoles[j]) {
             return true;
@@ -21,14 +26,31 @@ angular.module('theHive')
         }
       };
 
-      this.getRoles = function () {
-        $http.get(restServiceUrl + '/users/me')
+      this.getRoles = function (authToken) {
+        if (authToken == undefined) {
+          authToken = $cookies['CSRF-TOKEN'];
+        }
+        var request = {
+          method: 'GET',
+          url: restServiceUrl + '/users/me',
+          headers: {'X-AUTH-TOKEN': authToken}
+        };
+        $http(request)
         .success(function(data, status, headers, config) {
           userRoles = data.roles;
           rolesInitialized = true;
+          $rootScope.signedIn = true;
         })
         .error(function(data, status, headers, config) {
-          userRoles = [];
+          userRoles = ['NOT_LOGGED'];
+          $rootScope.signedIn = false;
         });
-      }
+      };
+
+      this.logout = function () {
+        userRoles = ['NOT_LOGGED'];
+        rolesInitialized = false;
+        $rootScope.signedIn = false;
+        $cookies['CSRF-TOKEN'] = 'null';
+      };
 }]);

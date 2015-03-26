@@ -8,9 +8,13 @@ angular.module('theHive')
     	var credentials = {username: $scope.username, password: $scope.password};
     	$http.post(restServiceUrl + '/login', credentials)
     		.success(function (result, status, headers, config) {
-      			$scope.result = result;
+      		$scope.result = result;
    				$cookies['CSRF-TOKEN'] = headers('X-AUTH-TOKEN');
-   				authorizationService.getRoles();
+   				authorizationService.getRoles(headers('X-AUTH-TOKEN'));
     		});
-  }
+    };
+
+    $scope.logout = function () {
+      authorizationService.logout();
+    };
 }]);

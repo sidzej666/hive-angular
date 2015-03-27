@@ -40,7 +40,7 @@ angular
       })
       .when('/signup', {
         templateUrl: 'login/signup.html',
-        controller: 'MainCtrl'
+        controller: 'LoginCtrl'
       })
       .otherwise({
         redirectTo: '/signin'

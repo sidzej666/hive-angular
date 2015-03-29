@@ -82,6 +82,30 @@ body {
   }
 }
 
-.error-text {
-  
+.error-div {
+  color: red;
+  text-align: left;
+  padding: 0px;
+  margin: 0px 0px 0px 35px;
+  font-weight: bold;
+}
+
+.error-input-border {
+  /*border: 2px solid red;*/
+}
+
+.error-div {
+  -webkit-transition:all linear 0.5s;
+  transition:all linear 0.5s;
+}
+
+.error-div.ng-hide {
+  opacity:0;
+  display: block!important;
+  visibility:hidden;
+}
+
+.hidden-div.ng-hide {
+  visibility:hidden;
+  display: block!important;
 }

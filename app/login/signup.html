@@ -14,11 +14,9 @@
                 </span> 
                 <input type="email" class="form-control" id="email" name="email" placeholder="Email" required ng-model="email" ng-class="{'error-input-border' : form.email.$invalid && form.$submitted}">
               </div>
-              <div ng-show="form.$submitted" class="hidden-div">
-                <div class="error-div" ng-show="form.email.$invalid && form.$submitted">
-                  <span style="visibility:hidden;">_</span>
-                  <span ng-show="form.email.$invalid && form.$submitted">Please provide a valid email address</span>
-                </div>
+              <div class="error-div ng-hide" ng-show="form.email.$invalid && form.$submitted">
+                <span style="visibility:hidden;">_</span>
+                <span>Please provide a valid email address</span>
               </div>
             </div>
             <div class="form-group">
@@ -29,12 +27,10 @@
                 </span> 
                 <input type="username" class="form-control" id="username" name="username" placeholder="Username" required ng-model="username" ng-class="{'error-input-border' : form.username.$invalid && form.$submitted}">
               </div>
-              <div ng-show="form.$submitted" class="hidden-div">
-                <div class="error-div" ng-show="(form.username.$error.required || error.usernameAlreadyTaken) && form.$submitted">
-                  <span style="visibility:hidden;">_</span>
-                  <span ng-show="form.username.$error.required && form.$submitted">Username required</span>
-                  <span ng-show="error.usernameAlreadyTaken && form.$submitted">Username already taken</span>
-                </div>
+              <div class="error-div ng-hide" ng-show="(form.username.$error.required || error.usernameAlreadyTaken) && form.$submitted">
+                <span style="visibility:hidden;">_</span>
+                <span ng-show="form.username.$error.required">Username required</span>
+                <span ng-show="error.usernameAlreadyTaken">Username already taken</span>
               </div>
             </div>
             <div class="form-group">
@@ -45,12 +41,10 @@
                 </span> 
                 <input type="password" class="form-control" id="password" name="password" placeholder="Password" required ng-minlength="5" ng-model="password" ng-class="{'error-input-border' : form.password.$invalid && form.$submitted}">
               </div>
-              <div ng-show="form.$submitted" class="hidden-div">
-                <div class="error-div" ng-show="form.password.$invalid && form.$submitted">
+                <div class="error-div ng-hide" ng-show="form.password.$invalid && form.$submitted">
                   <span style="visibility:hidden;">_</span>
-                  <span ng-show="form.password.$invalid && form.$submitted">Password required (at least 5 characters)</span>
+                  <span>Password required (at least 5 characters)</span>
                 </div>
-              </div>
             </div>
             <div class="form-group">
               <label for="confirmPassword">Confirm password:</label>
@@ -60,11 +54,9 @@
                 </span> 
                 <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" placeholder="Confirm password" ng-model="confirmPassword" pw-check="password" ng-class="{'error-input-border' : form.confirmPassword.$error.pwmatch && form.$submitted}">
               </div>
-              <div ng-show="form.$submitted" class="hidden-div">
-                <div class="error-div" ng-show="form.confirmPassword.$error.pwmatch && form.$submitted">
-                  <span style="visibility:hidden;">_</span>
-                  <span ng-show="form.confirmPassword.$error.pwmatch && form.$submitted">Passwords don't match</span>
-                </div>
+              <div class="error-div ng-hide" ng-show="form.confirmPassword.$error.pwmatch && form.$submitted">
+                <span style="visibility:hidden;">_</span>
+                <span>Passwords don't match</span>
               </div>
             </div>
             <button type="submit" class="btn btn-success" ng-click="register(form)">Register</button>

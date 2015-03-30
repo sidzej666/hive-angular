@@ -24,13 +24,11 @@
                 <input type="password" class="form-control" id="password" placeholder="Password" ng-model="password" required>
               </div>
             </div>
-            <div class="hidden-div" ng-show="invalidCredentials">
-              <div class="error-div" role="alert" ng-show="invalidCredentials" style="margin-bottom: 15px;">
-                <span style="visibility: hidden">_</span>
-                <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true" ng-show="invalidCredentials"></span>
-                <span class="sr-only">Error:</span>
-                <span ng-show="invalidCredentials">Invalid credentials</span>
-              </div>
+            <div class="error-div ng-hide" role="alert" ng-show="invalidCredentials" style="margin-bottom: 15px;">
+              <span style="visibility: hidden">_</span>
+              <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+              <span class="sr-only">Error:</span>
+              <span>Invalid credentials</span>
             </div>
             <button type="submit" class="btn btn-success" ng-click="login()">Sign in!</button>
             <a href="#/signup" onClick="" style="margin-left: 20px;">Register</a>

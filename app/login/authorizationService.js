@@ -44,6 +44,7 @@ angular.module('theHive')
         .error(function(data, status, headers, config) {
           userRoles = ['NOT_LOGGED'];
           $rootScope.signedIn = false;
+          rolesInitialized = true;
         });
       };
 

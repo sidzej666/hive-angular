@@ -9,7 +9,7 @@ angular.module('theHive')
             var v = elem.val()===angular.element( document.querySelector( firstPassword ) ).val();
             ctrl.$setValidity('pwmatch', v);
           });
-        }); 
+        });
       }
     }
   }]);

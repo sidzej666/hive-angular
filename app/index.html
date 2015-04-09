@@ -42,7 +42,15 @@
             </ul>
             <ul class="nav navbar-nav navbar-right">
               <li><a is-active-nav ng-href="#/signin" ng-show="!signedIn">Sign in</a></li>
-              <li ng-controller="LoginCtrl"><a is-active-nav ng-href="#/" ng-show="signedIn" ng-click="logout()">Log out</a></li>
+              <li ng-show="signedIn"><a ng-href="#/me">{{userData.username}}</a></li>
+              <li class="dropdown" ng-show="signedIn">
+                <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><span class="glyphicon glyphicon-menu-hamburger gi-1x"></span></a>
+                <ul class="dropdown-menu" role="menu">
+                  <li><a ng-href="#/">Edit account</a></li>
+                  <li><a ng-href="#/">Public profile</a></li>
+                  <li ng-controller="LoginCtrl"><a ng-href="#/" ng-click="logout()">Log out</a></li>
+                </ul>
+              </li>
             </ul>
           </div>
         </div>

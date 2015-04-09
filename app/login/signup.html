@@ -14,9 +14,10 @@
                 </span> 
                 <input type="email" class="form-control" id="email" name="email" placeholder="Email" required ng-model="email" ng-class="{'error-input-border' : form.email.$invalid && form.$submitted}">
               </div>
-              <div class="error-div ng-hide" ng-show="form.email.$invalid && form.$submitted">
+              <div class="error-div ng-hide" ng-show="(form.email.$invalid || registerUserErrors.has('email')) && form.$submitted">
                 <span style="visibility:hidden;">_</span>
-                <span>Please provide a valid email address</span>
+                <span ng-show="form.email.$invalid">Please provide a valid email address</span>
+                <span ng-show="registerUserErrors.has('email') && !form.email.$invalid">{{registerUserErrors.get('email')}}</span>
               </div>
             </div>
             <div class="form-group">
@@ -27,10 +28,10 @@
                 </span> 
                 <input type="username" class="form-control" id="username" name="username" placeholder="Username" required ng-model="username" ng-class="{'error-input-border' : form.username.$invalid && form.$submitted}">
               </div>
-              <div class="error-div ng-hide" ng-show="(form.username.$error.required || error.usernameAlreadyTaken) && form.$submitted">
+              <div class="error-div ng-hide" ng-show="(form.username.$error.required || registerUserErrors.has('username')) && form.$submitted">
                 <span style="visibility:hidden;">_</span>
                 <span ng-show="form.username.$error.required">Username required</span>
-                <span ng-show="error.usernameAlreadyTaken">Username already taken</span>
+                <span ng-show="registerUserErrors.has('username') && !form.username.$error.required">{{registerUserErrors.get('username')}}</span>
               </div>
             </div>
             <div class="form-group">
@@ -59,7 +60,7 @@
                 <span>Passwords don't match</span>
               </div>
             </div>
-            <button type="submit" class="btn btn-success" ng-click="register(form)">Register</button>
+            <button type="submit" class="btn btn-success" ng-click="register(form)" ng-disabled="registerButtonDisable">Register</button>
             <a href="#/sigin" onClick="" style="margin-left: 30px;">Sign in</a>
           </form>
         </div>

@@ -3,6 +3,7 @@ angular.module('theHive')
     function ($http, restServiceUrl, $location, $rootScope, $cookies) {
       var userRoles = ['NOT_LOGGED'];
       var rolesInitialized = false;
+      $rootScope.userData = {};
       $rootScope.signedIn = false;
 
       this.userHasRole = function (role) {
@@ -38,6 +39,7 @@ angular.module('theHive')
         $http(request)
         .success(function(data, status, headers, config) {
           userRoles = data.roles;
+          $rootScope.userData = data;
           rolesInitialized = true;
           $rootScope.signedIn = true;
         })

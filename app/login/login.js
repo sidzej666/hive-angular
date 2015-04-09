@@ -6,6 +6,7 @@ angular.module('theHive')
     $scope.invalidCredentials = false;
     $scope.passwordsDontMatch = false;
     $scope.registerButtonDisable = false;
+    $scope.registerUserErrors = new Map();
 
     $scope.login = function () {
     	var credentials = {username: $scope.username, password: $scope.password};
@@ -30,6 +31,7 @@ angular.module('theHive')
         return;
       }
       $scope.registerButtonDisable = true;
+      $scope.registerUserErrors = new Map();
       if (formData.$valid) {
         var userData = {
           username: $scope.username,
@@ -38,12 +40,18 @@ angular.module('theHive')
         };
         $http.post(restServiceUrl + '/users', userData)
         .success(function (result, status, headers, config) {
-          $scope.registerButtonDisable = false;
+          $cookies['CSRF-TOKEN'] = headers('X-AUTH-TOKEN');
+          authorizationService.getRoles(headers('X-AUTH-TOKEN'));
         })
         .error(function (result, status, headers, config) {
-          if (result.errorFields) {
-
+          if (result.fieldErrors != undefined) {
+            for (var i = 0; i < result.fieldErrors.length; i++) {
+              $scope.registerUserErrors.set(result.fieldErrors[i].fieldName, result.fieldErrors[i].message);
+            }
+            formData.$submitted = true;
           }
+        })
+        .finally(function () {
           $scope.registerButtonDisable = false;
         });
       } else {

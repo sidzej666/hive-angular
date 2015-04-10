@@ -39,8 +39,8 @@ angular
         }
       })
       .when('/signup', {
-        templateUrl: 'login/signup.html',
-        controller: 'LoginCtrl'
+        templateUrl: 'registration/signup.html',
+        controller: 'RegistrationCtrl'
       })
       .otherwise({
         redirectTo: '/signin'
@@ -80,6 +80,6 @@ angular
     });
   }])
   .run(['authorizationService', function(authorizationService) {
-    authorizationService.getRoles();
+    authorizationService.getUserData();
   }])
   .value('restServiceUrl', 'https://localhost:8444/HiveServer/rest');

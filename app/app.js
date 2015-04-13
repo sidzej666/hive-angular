@@ -65,7 +65,7 @@ angular
               // put a new random secret into our CSRF-TOKEN Cookie before each request
               //var cookie = b();
               //document.cookie = 'CSRF-TOKEN=' + cookie;
-              if ($cookies['CSRF-TOKEN'] != 'null') {
+              if ($cookies['CSRF-TOKEN'] != 'null' && $cookies['CSRF-TOKEN'] != undefined) {
                 config.headers['X-AUTH-TOKEN'] = $cookies['CSRF-TOKEN'];
               }
               return config;

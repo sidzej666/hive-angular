@@ -1,11 +1,14 @@
 describe('Authorization service', function () {
 	beforeEach(module("theHive"));
 
-	var authorizationService, rootScope;
+	var authorizationService, rootScope, restServiceUrl, cookies, httpBackend;
 	
-	beforeEach(inject(function (_authorizationService_, $rootScope) {
+	beforeEach(inject(function (_authorizationService_, $rootScope, _restServiceUrl_, $cookies, $httpBackend) {
 	    authorizationService = _authorizationService_;
-	    rootScope = $rootScope.$new();
+	    rootScope = $rootScope;
+	    restServiceUrl = _restServiceUrl_;
+	    cookies = $cookies;
+	    httpBackend = $httpBackend;
   	}))
 
 	it('populates userRoles with "NOT_LOGGED" at startup', function () {
@@ -88,16 +91,127 @@ describe('Authorization service', function () {
 	})
 
 	describe('getUserData', function() {
-		var cookies;
+		var userData = {roles: '[USER, ADMIN]'};
+		var userDataCall;
 		beforeEach(function() {
-			inject(function ($cookies) {
-				cookies = $cookies;
-			})
 			cookies['CSRF-TOKEN'] = 'sampleCookie';
+			userDataCall = httpBackend.when('GET', restServiceUrl + "/users/me").respond(userData);
 		})
 
-		it('gets authToken from cookie if called without parameters', function(){
+		afterEach(function() {
+			httpBackend.verifyNoOutstandingExpectation();
+			httpBackend.verifyNoOutstandingRequest();
+			httpBackend.resetExpectations();
+		})
+
+		it('gets authToken from cookie if called without parameters', function() {
+			//cannot test it, the X-AUTH-TOKEN is wrongly catched
+			authorizationService.getUserData();
+			httpBackend.flush();
+		})
+
+		it('sets userRoles on success', function() {
+			authorizationService.getUserData();
+			httpBackend.flush();
+			expect(authorizationService.userRoles).toEqual(userData.roles);
+		})
+
+		it('sets userDataInitialized to true on success', function() {
+			authorizationService.getUserData();
+			httpBackend.flush();
+			expect(authorizationService.userDataInitialized).toEqual(true);
+		})
+
+		it('sets signedIn to true on sucess', function() {
+			authorizationService.getUserData();
+			httpBackend.flush();
+			expect(rootScope.signedIn).toEqual(true);
+		})
+
+		it('sets userData on sucess', function() {
+			authorizationService.getUserData();
+			httpBackend.flush();
+			expect(rootScope.userData).toEqual(userData);
+		})
+
+		it("sets userRoles to ['NOT_LOGGED'] on failure", function() {
+			authorizationService.userRoles = [];
+			userDataCall.respond(403, {});
+			authorizationService.getUserData();
+			httpBackend.flush();
+			expect(authorizationService.userRoles).toEqual(['NOT_LOGGED']);
+		})
+
+		it('sets signedId to false on failure', function() {
+			//first set it to true and then check if ti will change
+			authorizationService.getUserData();
+			httpBackend.flush();
+			expect(rootScope.signedIn).toEqual(true);
+			userDataCall.respond(403, {});
+			authorizationService.getUserData();
+			httpBackend.flush();
+			expect(rootScope.signedIn).toEqual(false);
+		})
+
+		it('sets userDataInitialized to true on failure', function() {
+			userDataCall.respond(403, {});
+			authorizationService.getUserData();
+			httpBackend.flush();
+			expect(authorizationService.userDataInitialized).toEqual(true);
+		})
+	})
+
+	describe('logout', function() {
+		beforeEach (function() {
+			authorizationService.userDataInitialized = true;
+			authorizationService.userRoles = ['USER'];
+			rootScope.userData = {roles: authorizationService.userRoles};
+			rootScope.signedIn = true;
+			cookies['CSRF-TOKEN'] = 'sampleCookie';
+			authorizationService.logout();
+		})
+
+		it('should set userRoles to ["NOT_LOGGED"]', function() {
+			expect(authorizationService.userRoles).toEqual(['NOT_LOGGED']);
+		})
+
+		it('should set userDataInitialized to true', function() {
+			expect(authorizationService.userDataInitialized).toEqual(false);
+		})
+
+		it('should set signedIn to false', function() {
+			expect(rootScope.signedIn).toEqual(false);
+		})
+
+		it('should set userData to empty object', function() {
+			expect(rootScope.userData).toEqual({});
+		})
+
+		it('should set CSRF-TOKEN cookie to null', function() {
+			expect(cookies['CSRF-TOKEN']).toEqual('null');
+		})
+	})
+
+	describe('login', function() {
+		var credentials = {username: 'username', password: 'password'};
+		var deferred;
+		beforeEach(function() {
+			inject(function($q) {
+				deferred = $q.defer();
+			})
+		})
+
+		afterEach(function() {
+			httpBackend.verifyNoOutstandingExpectation();
+			httpBackend.verifyNoOutstandingRequest();
+		})
+
+		it('should send credentials as POST body', function() {
+			console.log('login');
+			httpBackend.expectPOST(restServiceUrl + "/login", credentials).respond(200, {});
+			authorizationService.login(credentials);
 			
+			httpBackend.flush();
 		})
 	})
 }) 

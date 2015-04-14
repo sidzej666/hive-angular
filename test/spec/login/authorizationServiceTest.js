@@ -101,13 +101,18 @@ describe('Authorization service', function () {
 		afterEach(function() {
 			httpBackend.verifyNoOutstandingExpectation();
 			httpBackend.verifyNoOutstandingRequest();
-			httpBackend.resetExpectations();
 		})
 
 		it('gets authToken from cookie if called without parameters', function() {
-			//cannot test it, the X-AUTH-TOKEN is wrongly catched
-			authorizationService.getUserData();
+			cookies['CSRF-TOKEN'] = 'sampleCookie';
+			httpBackend.expectGET(restServiceUrl + "/users/me");
 			httpBackend.flush();
+			authorizationService.getUserData();
+			httpBackend.expectGET(restServiceUrl + "/users/me", function(headers) {
+				return headers['X-AUTH-TOKEN'] == 'sampleCookie';
+			}).respond(userData);
+			httpBackend.flush();
+
 		})
 
 		it('sets userRoles on success', function() {
@@ -194,11 +199,11 @@ describe('Authorization service', function () {
 
 	describe('login', function() {
 		var credentials = {username: 'username', password: 'password'};
-		var deferred;
+		var headers = {'X-AUTH-TOKEN': 'authToken'};
 		beforeEach(function() {
-			inject(function($q) {
-				deferred = $q.defer();
-			})
+			httpBackend.when('POST', restServiceUrl + "/login", credentials).respond(200, {}, headers);
+			spyOn(authorizationService, 'setAuthCookieAndGetUserData');
+			httpBackend.when('GET', restServiceUrl + "/users/me").respond({});
 		})
 
 		afterEach(function() {
@@ -207,11 +212,66 @@ describe('Authorization service', function () {
 		})
 
 		it('should send credentials as POST body', function() {
-			console.log('login');
-			httpBackend.expectPOST(restServiceUrl + "/login", credentials).respond(200, {});
 			authorizationService.login(credentials);
-			
+			httpBackend.expect('POST', restServiceUrl + "/login", credentials);
 			httpBackend.flush();
+		})
+
+		it('should set call setAuthCookieAndGetUserData with response headers on success', function() {
+			authorizationService.login(credentials);
+			httpBackend.flush();
+			expect(authorizationService.setAuthCookieAndGetUserData).toHaveBeenCalledWith('authToken');
+		})
+
+		it('should not call setAuthCookieAndGetUserData on error', function() {
+			authorizationService.login(credentials);
+			httpBackend.expectPOST(restServiceUrl + "/login", credentials).respond(401);
+			httpBackend.flush();
+			expect(authorizationService.setAuthCookieAndGetUserData).not.toHaveBeenCalled();	
+		})
+	})
+
+	describe('register', function() {
+		var user = {username: 'username', password: 'password', email: 'email@email.com'};
+		var headers = {'X-AUTH-TOKEN': 'authToken'};
+		beforeEach(function() {
+			httpBackend.when('POST', restServiceUrl + "/users", user).respond(200, {}, headers);
+			spyOn(authorizationService, 'setAuthCookieAndGetUserData');
+			httpBackend.when('GET', restServiceUrl + "/users/me").respond({});
+		})
+
+		it('should send user as POST body', function() {
+			authorizationService.register(user);
+			httpBackend.expect('POST', restServiceUrl + "/users", user);
+			httpBackend.flush();
+		})
+
+		it('should call setAuthCookieAndGetUserData on success', function() {
+			authorizationService.register(user);
+			httpBackend.flush();
+			expect(authorizationService.setAuthCookieAndGetUserData).toHaveBeenCalledWith('authToken');
+		})
+
+		it('should not call setAuthCookieAndGetUserData on error', function() {
+			authorizationService.register(user);
+			httpBackend.expectPOST(restServiceUrl + "/users", user).respond(404);
+			httpBackend.flush();
+			expect(authorizationService.setAuthCookieAndGetUserData).not.toHaveBeenCalled();
+		})
+	})
+
+	describe('setAuthCookieAndGetUserData', function() {
+		beforeEach(function() {
+			spyOn(authorizationService, 'getUserData');
+			authorizationService.setAuthCookieAndGetUserData('authTokenXXX');
+		})
+
+		it('should set cookie to authToken', function() {
+			expect(cookies['CSRF-TOKEN']).toBe('authTokenXXX');
+		}) 
+
+		it('should call getUserData with authToken', function() {
+			expect(authorizationService.getUserData).toHaveBeenCalledWith('authTokenXXX');
 		})
 	})
 }) 

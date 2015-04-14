@@ -62,7 +62,6 @@ angular.module('theHive')
       this.login = function (credentials) {
 
         var self = this;
-        console.log("in login")
         var request = {
           method: 'POST',
           url: restServiceUrl + '/login',
@@ -70,11 +69,9 @@ angular.module('theHive')
         }
         return $http(request)
                   .success(function (result, status, headers, config) {
-                    console.log('in login sucess')
-                    self.setAuthCookieAndGetUserData(headers);
+                    self.setAuthCookieAndGetUserData(headers('X-AUTH-TOKEN'));
                   })
                   .error(function () {
-                    console.log("in login error")
                   });
       };
 
@@ -82,13 +79,12 @@ angular.module('theHive')
         var self = this;
         return $http.post(restServiceUrl + '/users', userData)
                   .success(function (result, status, headers, config) {
-                    self.setAuthCookieAndGetUserData(headers);
+                    self.setAuthCookieAndGetUserData(headers('X-AUTH-TOKEN'));
                   });
       }
 
-      this.setAuthCookieAndGetUserData = function (headers) {
-        console.log('in setAuthCookieAndGetUserData')
-        $cookies['CSRF-TOKEN'] = headers('X-AUTH-TOKEN');
-        this.getUserData(headers('X-AUTH-TOKEN'));
+      this.setAuthCookieAndGetUserData = function (authToken) {
+        $cookies['CSRF-TOKEN'] = authToken;
+        this.getUserData(authToken);
       };
 }]);

@@ -80,6 +80,9 @@ angular
     });
   }])
   .run(['authorizationService', function(authorizationService) {
-    authorizationService.getUserData();
+    //for tests isolation purposses, when mocking authorizationService calling getUserData cause problems
+    if (authorizationService.getUserData != undefined) {
+      authorizationService.getUserData();
+    }
   }])
   .value('restServiceUrl', 'https://localhost:8444/HiveServer/rest');
